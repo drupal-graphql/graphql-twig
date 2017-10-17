@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="graphql">
+  <description>Default PHP CodeSniffer configuration for GraphQL.</description>
+  <file>.</file>
+
+  <arg name="extensions" value="inc,install,module,php,profile,test,theme"/>
+
+  <rule ref="Drupal.NamingConventions.ValidVariableName.LowerCamelName">
+    <!-- Annotations must use the same property names as in the configuration. -->
+    <exclude-pattern>src/Annotation</exclude-pattern>
+    <exclude-pattern>src/Core/Annotation</exclude-pattern>
+  </rule>
+
+  <!-- We always want short array syntax only. -->
+  <rule ref="Generic.Arrays.DisallowLongArraySyntax" />
+</ruleset>
