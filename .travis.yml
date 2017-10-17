@@ -74,7 +74,7 @@ install:
 
   # Download Drupal 8 core from the Github mirror because it is faster.
   - git clone --branch $DRUPAL_CORE --depth 1 https://github.com/drupal/drupal.git $DRUPAL_BUILD_DIR
-  - git clone --branch $DRUPAL_GRAPHQL --depth 1 https://github.com/fubhy/graphql-drupal.git $DRUPAL_BUILD_DIR/modules/graphql
+  - git clone --branch $DRUPAL_GRAPHQL --depth 1 https://github.com/drupal-graphql/graphql.git $DRUPAL_BUILD_DIR/modules/graphql
 
   # Reference the module in the build site.
   - ln -s $TRAVIS_BUILD_DIR $DRUPAL_BUILD_DIR/modules/graphql_twig
