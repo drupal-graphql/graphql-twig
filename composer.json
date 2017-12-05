@@ -1,0 +1,8 @@
+{
+  "name": "drupal/graphql-twig",
+  "type": "drupal-module",
+  "description": "Feed Twig templates with GraphQL.",
+  "homepage": "http://drupal.org/project/graphql_twig",
+  "license": "GPL-2.0+",
+  "minimum-stability": "dev"
+}
