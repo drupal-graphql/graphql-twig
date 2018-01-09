@@ -19,33 +19,54 @@ trait GraphQLTemplateTrait {
     $includes = [];
 
     if ($this instanceof \Twig_Template) {
-      /** @var \Twig_Template $parent */
-      $parent = $this->graphqlParent ? $this->loadTemplate($this->graphqlParent) : NULL;
+      $query = $this->getGraphQLFragment();
 
-      // If there is no query for this template, try to get one from the
-      // parent template.
-      if ($this->graphqlQuery) {
-        $query = $this->graphqlQuery;
-      }
-      elseif ($parent) {
-        $query = $parent->getGraphQLQuery();
-      }
+      $includes = array_keys($this->getGraphQLIncludes());
 
       // Recursively collect all included fragments.
       $includes = array_map(function ($template) {
-        return $this->loadTemplate($template)->getGraphQLQuery();
-      }, $this->getGraphQLIncludes());
+        return $this->loadTemplate($template)->getGraphQLFragment();
+      }, $includes);
 
       // Always add includes from parent templates.
-      if ($parent) {
+      if ($parent = $this->getGraphQLParent()) {
         $includes += array_map(function ($template) {
-          return $this->loadTemplate($template)->getGraphQLQuery();
-        }, $parent->getGraphQLIncludes());
+          return $this->loadTemplate($template)->getGraphQLFragment();
+        }, $includes);
       }
     }
 
 
     return implode("\n", [-1 => $query] + $includes);
+  }
+
+  /**
+   * Get the files parent template.
+   *
+   * @return \Twig_Template|null
+   *   The parent template or null.
+   */
+  protected function getGraphQLParent() {
+    return $this->graphqlParent ? $this->loadTemplate($this->graphqlParent) : NULL;
+  }
+
+  /**
+   * Retrieve the files graphql fragment.
+   *
+   * @return string
+   *   The GraphQL fragment.
+   */
+  public function getGraphQLFragment() {
+    $query = '';
+    // If there is no query for this template, try to get one from the
+    // parent template.
+    if ($this->graphqlQuery) {
+      $query = $this->graphqlQuery;
+    }
+    elseif ($parent = $this->getGraphQLParent()) {
+      $query = $parent->getGraphQLFragment();
+    }
+    return $query;
   }
 
   /**
@@ -55,9 +76,11 @@ trait GraphQLTemplateTrait {
    *   The list of included templates.
    */
   public function getGraphQLIncludes() {
-    $includes = $this->graphqlIncludes;
-    foreach ($this->graphqlIncludes as $include) {
-      $includes += $this->loadTemplate($include)->getGraphQLIncludes();
+    $includes = array_flip($this->graphqlIncludes);
+    if ($includes) {
+      foreach ($includes as $include => $key) {
+        $includes += $this->loadTemplate($include)->getGraphQLIncludes();
+      }
     }
     return $includes;
   }
