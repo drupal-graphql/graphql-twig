@@ -44,7 +44,7 @@ function graphql_twig_theme_registry_alter(&$theme_registry) {
 function graphql_twig_get_query($file) {
   if (file_exists($file)) {
 
-    $graphqlFile = str_replace('.html.twig', '.gql', $file);
+    $graphqlFile = $file . '.gql';
     if (file_exists($graphqlFile)) {
       return file_get_contents($graphqlFile);
     }

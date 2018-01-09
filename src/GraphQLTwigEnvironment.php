@@ -26,7 +26,7 @@ class GraphQLTwigEnvironment extends TwigEnvironment {
   public function compileSource($source, $name = NULL) {
     if ($source instanceof \Twig_Source) {
       // Check if there is a `*.gql` file with the same name as the template.
-      $graphqlFile = str_replace('.html.twig', '.gql', $source->getPath());
+      $graphqlFile = $source->getPath() . '.gql';
       if (file_exists($graphqlFile)) {
         $source = new \Twig_Source(
           '{% graphql %}' . file_get_contents($graphqlFile) . '{% endgraphql %}' . $source->getCode(),
