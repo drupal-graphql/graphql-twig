@@ -31,7 +31,7 @@ class GraphQLTwigExtensionTest extends UnitTestCase {
       'dynamic_include' => '{% graphql %}a{% endgraphql %}{% include sub_fragment with { foo: "bar" } %}',
       'fragment' => '{% graphql %}b{% endgraphql %}{% include "sub_fragment" %}',
       'sub_fragment' => '{% graphql %}c{% endgraphql %}',
-      'extend_include' => '{% graphql %}a{% endgraphql %}{% extends "fragment" %}'
+      'extend_include' => '{% graphql %}a{% endgraphql %}{% extends "fragment" %}',
     ]));
     $this->twig->addExtension(new GraphQLTwigExtension());
   }
