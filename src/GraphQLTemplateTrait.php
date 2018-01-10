@@ -31,8 +31,8 @@ trait GraphQLTemplateTrait {
       // Always add includes from parent templates.
       if ($parent = $this->getGraphQLParent()) {
         $includes += array_map(function ($template) {
-          return $this->loadTemplate($template)->getGraphQLFragment();
-        }, $includes);
+          return $this->loadTemplate($template)->getGraphQLQuery();
+        }, array_keys($parent->getGraphQLIncludes()));
       }
     }
 
