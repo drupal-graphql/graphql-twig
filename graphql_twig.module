@@ -9,6 +9,7 @@ use Youshido\GraphQL\Parser\Parser;
 use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\graphql_twig\GraphQLTwigEnvironment;
+use Drupal\Core\Site\Settings;
 
 /**
  * Implements hook_theme_registry_alter().
@@ -17,8 +18,6 @@ use Drupal\graphql_twig\GraphQLTwigEnvironment;
  * the GraphQL preprocessor.
  */
 function graphql_twig_theme_registry_alter(&$theme_registry) {
-  /** @var \Drupal\Core\Template\TwigEnvironment $twig */
-  $twig = Drupal::service('twig');
   foreach ($theme_registry as $hook => $info) {
     $file = $info['path'] . '/' . $info['template'] . '.html.twig';
     if ($query = graphql_twig_get_query($file)) {
@@ -107,11 +106,20 @@ function graphql_twig_process_query(&$variables, $hook, $info) {
     // TODO: This needs to be configurable.
     $queryResult = $processor->processQuery('default', $query, $arguments);
 
+    $debug = Settings::get('graphql_twig_debug', FALSE);
+
     $variables['graphql'] = $queryResult->getData();
+    $variables['graphql']['query'] = $query;
+    $variables['graphql']['variables'] = json_encode($arguments);
+    $variables['graphql']['debug'] = $debug;
 
     $variables['#cache']['contexts'] = $queryResult->getCacheContexts();
     $variables['#cache']['tags'] = $queryResult->getCacheTags();
     $variables['#cache']['max-age'] = $queryResult->getCacheMaxAge();
+
+    if ($debug) {
+      $variables['#attached']['library'][] = 'graphql_twig/debug';;
+    }
   }
 }
 

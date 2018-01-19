@@ -7,6 +7,24 @@ namespace Drupal\graphql_twig;
  */
 trait GraphQLTemplateTrait {
 
+  public function display(array $context, array $blocks = array()) {
+    if (!isset($context['graphql']) || !$context['graphql']['debug']) {
+      parent::display($context, $blocks);
+      return;
+    }
+
+    echo '<div class="graphql-twig-debug-wrapper" data-query="' . htmlspecialchars($context['graphql']['query']). '" data-variables="' . htmlspecialchars($context['graphql']['variables']) . '">';
+    if (isset($context['graphql']['errors'])) {
+      echo '<ul class="graphql-twig-errors">';
+      foreach ($context['graphql']['errors'] as $error) {
+        echo '<li>' . $error['message'] . '</li>';
+      }
+      echo '</ul>';
+    }
+    parent::display($context, $blocks);
+    echo '</div>';
+  }
+
   /**
    * Recursively build the GraphQL query.
    *

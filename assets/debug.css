@@ -1,0 +1,31 @@
+.graphql-twig-errors {
+  list-style: none;
+  border: 1px solid #d80000;
+  background: #ffdbe3;
+  color: #a10000;
+  padding: 1em;
+}
+
+.graphql-twig-errors li:not(:first-child) {
+  margin-top: 1em;
+}
+
+.graphql-twig-debug-wrapper {
+  position: relative;
+}
+
+.graphql-twig-debug-wrapper form {
+  margin: 0!important;
+  padding: 0!important;
+}
+
+.graphql-twig-debug-wrapper input[type="submit"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: none;
+}
+
+.graphql-twig-debug-wrapper:hover input[type="submit"] {
+  display: block;
+}
