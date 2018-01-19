@@ -1,5 +1,8 @@
 debug:
   version: 1.x
+  dependencies:
+    - core/jquery
+    - core/jquery.once
   css:
     theme:
       assets/debug.css: {}

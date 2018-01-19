@@ -14,18 +14,18 @@
   position: relative;
 }
 
-.graphql-twig-debug-wrapper form {
+.graphql-twig-debug-wrapper .graphql-twig-debug-form {
   margin: 0!important;
   padding: 0!important;
 }
 
-.graphql-twig-debug-wrapper input[type="submit"] {
+.graphql-twig-debug-wrapper .graphql-twig-debug-form input[type="submit"] {
   position: absolute;
   top: 0;
   right: 0;
   display: none;
 }
 
-.graphql-twig-debug-wrapper:hover input[type="submit"] {
+.graphql-twig-debug-wrapper:hover .graphql-twig-debug-form input[type="submit"] {
   display: block;
 }
