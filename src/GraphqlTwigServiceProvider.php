@@ -10,7 +10,7 @@ use Drupal\Core\DependencyInjection\ServiceProviderInterface;
 /**
  * Service provider to inject a custom derivation of `TwigEnvironment`.
  */
-class GraphQLTwigServiceProvider extends ServiceProviderBase {
+class GraphqlTwigServiceProvider extends ServiceProviderBase {
 
   /**
    * {@inheritdoc}
