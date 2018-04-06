@@ -132,7 +132,7 @@ class ThemeTest extends KernelTestBase {
       ->willReturn(new QueryResult([
         'data' => [
           'echo' => $testString,
-        ]
+        ],
       ], new CacheableMetadata()))
       ->shouldBeCalled();
 
