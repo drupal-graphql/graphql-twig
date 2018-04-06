@@ -23,6 +23,10 @@ use Drupal\Core\Site\Settings;
  */
 function graphql_twig_theme_registry_alter(&$theme_registry) {
   foreach ($theme_registry as $hook => $info) {
+    if (!(isset($info['path']) && isset($info['template']))) {
+      continue;
+    }
+
     $file = $info['path'] . '/' . $info['template'] . '.html.twig';
     if ($query = graphql_twig_get_query($file)) {
       $theme_registry[$hook]['graphql_enabled'] = TRUE;
@@ -111,7 +115,7 @@ function graphql_twig_process_query(&$variables, $hook, $info) {
       }
     }
 
-    $queryResult = $processor->processQuery('default', OperationParams::create([
+    $queryResult = $processor->processQuery('default:default', OperationParams::create([
       'query' => $query,
       'variables' => $arguments,
     ]));

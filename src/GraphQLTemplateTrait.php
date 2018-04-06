@@ -14,10 +14,10 @@ trait GraphQLTemplateTrait {
     }
 
     echo '<div class="graphql-twig-debug-wrapper" data-query="' . htmlspecialchars($context['graphql']['query']). '" data-variables="' . htmlspecialchars($context['graphql']['variables']) . '">';
-    if (isset($context['graphql']['errors'])) {
+    if (isset($context['graphql']['errors']) && $context['graphql']['errors']) {
       echo '<ul class="graphql-twig-errors">';
       foreach ($context['graphql']['errors'] as $error) {
-        echo '<li>' . $error['message'] . '</li>';
+        echo '<li>' . $error->message . '</li>';
       }
       echo '</ul>';
     }
