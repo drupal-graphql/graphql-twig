@@ -49,7 +49,9 @@ class ThemeTest extends KernelTestBase {
   public function testQueryAssembly() {
     /** @var \Prophecy\Prophecy\MethodProphecy $process */
     $this->processor
-      ->processQuery(Argument::any(), OperationParams::create(['query' => $this->getQuery('garage.gql')]), [])
+      ->processQuery(Argument::any(), Argument::that(function (OperationParams $params) {
+        return $params->query === $this->getQuery('garage.gql');
+      }))
       ->willReturn(new QueryResult())
       ->shouldBeCalled();
 
@@ -63,10 +65,11 @@ class ThemeTest extends KernelTestBase {
   public function testCacheableQuery() {
 
     $metadata = new CacheableMetadata();
+    $metadata->setCacheMaxAge(-1);
 
     $process = $this->processor
-      ->processQuery(Argument::any(), $this->getQuery('garage.gql'), [])
-      ->willReturn(new QueryResult([], $metadata));
+      ->processQuery(Argument::any(), Argument::any())
+      ->willReturn(new QueryResult([], [], [], $metadata));
 
     $element = [
       '#theme' => 'graphql_garage',
@@ -94,8 +97,8 @@ class ThemeTest extends KernelTestBase {
     $metadata->setCacheMaxAge(0);
 
     $process = $this->processor
-      ->processQuery(Argument::any(), $this->getQuery('garage.gql'), [])
-      ->willReturn(new QueryResult([], $metadata));
+      ->processQuery(Argument::any(), Argument::any())
+      ->willReturn(new QueryResult([], [], [], $metadata));
 
     $element = [
       '#theme' => 'graphql_garage',
@@ -120,14 +123,10 @@ class ThemeTest extends KernelTestBase {
   public function testAutoThemeHook() {
     $testString = 'This is a test.';
     $this->processor
-      ->processQuery(Argument::any(), $this->getQuery('echo.gql'), [
-        'input' => $testString,
-      ])
+      ->processQuery(Argument::any(), Argument::any())
       ->willReturn(new QueryResult([
-        'data' => [
-          'echo' => $testString,
-        ],
-      ], new CacheableMetadata()))
+        'echo' => $testString,
+      ]))
       ->shouldBeCalled();
 
     $element = [

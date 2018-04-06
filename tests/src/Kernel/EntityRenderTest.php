@@ -63,12 +63,10 @@ class EntityRenderTest extends KernelTestBase {
     ]);
     $node->save();
 
-    $this->processor->processQuery(Argument::any(), Argument::any(), ['node' => '1'])
+    $this->processor->processQuery(Argument::any(), Argument::any())
       ->willReturn(new QueryResult([
-        'data' => [
-          'node' => [
-            'title' => 'Test',
-          ],
+        'node' => [
+          'title' => 'Test',
         ],
       ]));
 
@@ -88,14 +86,12 @@ class EntityRenderTest extends KernelTestBase {
     ]);
     $node->save();
 
-    $process = $this->processor->processQuery(Argument::any(), Argument::any(), ['node' => '1'])
+    $process = $this->processor->processQuery(Argument::any(), Argument::any())
       ->willReturn(new QueryResult([
-        'data' => [
-          'node' => [
-            'title' => 'Test',
-          ],
+        'node' => [
+          'title' => 'Test',
         ],
-      ]));
+      ], [], [], (new CacheableMetadata())->setCacheMaxAge(-1)));
 
     $viewBuilder = $this->container->get('entity_type.manager')->getViewBuilder('node');
 
@@ -121,12 +117,10 @@ class EntityRenderTest extends KernelTestBase {
     $metadata = new CacheableMetadata();
     $metadata->setCacheMaxAge(0);
 
-    $process = $this->processor->processQuery(Argument::any(), Argument::any(), ['node' => '1'])
+    $process = $this->processor->processQuery(Argument::any(), Argument::any())
       ->willReturn(new QueryResult([
-        'data' => [
-          'node' => [
-            'title' => 'Test',
-          ],
+        'node' => [
+          'title' => 'Test',
         ],
       ], [], [], $metadata));
 
