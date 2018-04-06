@@ -70,7 +70,7 @@ class EntityRenderTest extends KernelTestBase {
             'title' => 'Test',
           ],
         ],
-      ], new CacheableMetadata()));
+      ]));
 
     $viewBuilder = $this->container->get('entity_type.manager')->getViewBuilder('node');
     $build = $viewBuilder->view($node);
@@ -95,7 +95,7 @@ class EntityRenderTest extends KernelTestBase {
             'title' => 'Test',
           ],
         ],
-      ], new CacheableMetadata()));
+      ]));
 
     $viewBuilder = $this->container->get('entity_type.manager')->getViewBuilder('node');
 
@@ -128,7 +128,7 @@ class EntityRenderTest extends KernelTestBase {
             'title' => 'Test',
           ],
         ],
-      ], $metadata));
+      ], [], [], $metadata));
 
     $viewBuilder = $this->container->get('entity_type.manager')->getViewBuilder('node');
 
