@@ -5,8 +5,12 @@
  * GraphQL Twig hook implementations.
  */
 
-use Youshido\GraphQL\Parser\Parser;
-use Youshido\GraphQL\Parser\Ast\ArgumentValue\Variable;
+use GraphQL\Language\AST\DefinitionNode;
+use GraphQL\Language\AST\InputValueDefinitionNode;
+use GraphQL\Language\AST\OperationDefinitionNode;
+use GraphQL\Language\Parser;
+use GraphQL\Language\Source;
+use GraphQL\Server\OperationParams;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\graphql_twig\GraphQLTwigEnvironment;
 use Drupal\Core\Site\Settings;
@@ -50,9 +54,15 @@ function graphql_twig_get_query($file) {
 
     preg_match(GraphQLTwigEnvironment::$GRAPHQL_ANNOTATION_REGEX, file_get_contents($file), $matches);
     if (array_key_exists('query', $matches)) {
-      $source = (new Parser())->parse($matches['query']);
-      if ($source['queries']) {
-        return $matches['query'];
+      $parser = new Parser(new Source($matches['query']));
+      $doc = $parser->parseDocument();
+      if ($doc->definitions) {
+        $operations = array_filter(iterator_to_array($doc->definitions->getIterator()), function (DefinitionNode $node) {
+          return $node instanceof OperationDefinitionNode;
+        });
+        if ($operations) {
+          return $matches['query'];
+        }
       }
     }
   }
@@ -70,10 +80,10 @@ function graphql_twig_get_query($file) {
  *   A list of variable names.
  */
 function graphql_twig_get_query_variables($query) {
-  $source = (new Parser())->parse($query);
-  return array_map(function (Variable $var) {
-    return $var->getName();
-  }, $source['variables']);
+  $parser = new Parser(new Source($query));
+  return array_map(function (InputValueDefinitionNode $var) {
+    return $var->name->value;
+  }, $parser->parseArgumentDefs());
 }
 
 /**
@@ -86,8 +96,6 @@ function graphql_twig_process_query(&$variables, $hook, $info) {
   if (isset($info['graphql_enabled']) && $info['graphql_enabled']) {
     /** @var \Drupal\graphql\GraphQL\Execution\QueryProcessor $processor */
     $processor = Drupal::service('graphql.query_processor');
-    /** @var \Drupal\graphql\GraphQL\Schema\SchemaLoader $loader */
-    $loader = Drupal::service('graphql.schema_loader');
 
     /** @var \Drupal\Core\Template\TwigEnvironment $twig */
     $twig = Drupal::service('twig');
@@ -103,12 +111,17 @@ function graphql_twig_process_query(&$variables, $hook, $info) {
       }
     }
 
-    // TODO: This needs to be configurable.
-    $queryResult = $processor->processQuery('default', $query, $arguments);
+    $queryResult = $processor->processQuery('default', OperationParams::create([
+      'query' => $query,
+      'variables' => $arguments,
+    ]));
 
     $debug = Settings::get('graphql_twig_debug', FALSE);
 
-    $variables['graphql'] = $queryResult->getData();
+    $variables['graphql'] = [
+      'data' => $queryResult->data,
+      'errors' => $queryResult->errors,
+    ];
     $variables['graphql']['query'] = $query;
     $variables['graphql']['variables'] = json_encode($arguments);
     $variables['graphql']['debug'] = $debug;

@@ -3,11 +3,11 @@
 namespace Drupal\Tests\graphql_twig\Kernel;
 
 use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\Core\Cache\Context\CacheContextsManager;
 use Drupal\graphql\GraphQL\Execution\QueryResult;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\graphql\Traits\GraphQLFileTestTrait;
 use Drupal\Tests\graphql_twig\Traits\ThemeTestTrait;
+use GraphQL\Server\OperationParams;
 use Prophecy\Argument;
 
 /**
@@ -20,7 +20,9 @@ class ThemeTest extends KernelTestBase {
   use ThemeTestTrait;
 
   /**
-   * @var CacheContextsManager
+   * The cache contexts manager.
+   *
+   * @var \Drupal\Core\Cache\Context\CacheContextsManager
    */
   protected $contextManager;
 
@@ -40,7 +42,7 @@ class ThemeTest extends KernelTestBase {
     parent::setUp();
     // Skip these tests in travis for now, since they break there for an unknown
     // reason.
-    // TODO: re-enable tests on travis
+    // TODO: re-enable tests on travis.
     if (getenv('TRAVIS')) {
       $this->markTestSkipped();
     }
@@ -53,8 +55,8 @@ class ThemeTest extends KernelTestBase {
   public function testQueryAssembly() {
     /** @var \Prophecy\Prophecy\MethodProphecy $process */
     $this->processor
-      ->processQuery(Argument::any(), $this->getQuery('garage.gql'), [])
-      ->willReturn(new QueryResult([], new CacheableMetadata()))
+      ->processQuery(Argument::any(), OperationParams::create(['query' => $this->getQuery('garage.gql')]), [])
+      ->willReturn(new QueryResult())
       ->shouldBeCalled();
 
     $element = ['#theme' => 'graphql_garage'];
