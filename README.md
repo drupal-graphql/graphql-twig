@@ -49,7 +49,7 @@ be executed in an additional preprocessing step, to populate your template with 
 to fall back to site building or manual preprocessing.
 
 This is the basic concept of GraphQL in Twig. Additionally it will collect query fragments from
-included templates, automatically try to match template variables to query arguments and enables you to tap
+included templates, automatically try to match template variables to query arguments and enable you to tap
 into all features of the [Drupal GraphQL] module.
 
 More documentation coming soon!
