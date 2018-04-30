@@ -71,7 +71,7 @@ class GraphQLNodeVisitor extends \Twig_BaseNodeVisitor {
 
     // When encountering a GraphQL fragment, add it to the current query.
     if ($node instanceof GraphQLFragmentNode) {
-      $this->query .= $node->getFragment();
+      $this->query .= $node->fragment;
     }
 
     return $node;

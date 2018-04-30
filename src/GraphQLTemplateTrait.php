@@ -2,27 +2,128 @@
 
 namespace Drupal\graphql_twig;
 
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\graphql\GraphQL\Execution\QueryProcessor;
+use GraphQL\Server\OperationParams;
+
 /**
  * Trait that will be attached to all GraphQL enabled Twig templates.
  */
 trait GraphQLTemplateTrait {
 
+  /**
+   * @return bool
+   */
+  abstract public static function hasGraphQLOperations();
+
+  /**
+   * @var string
+   */
+  abstract public static function rawGraphQLQuery();
+
+  /**
+   * @return string
+   */
+  abstract public static function rawGraphQLParent();
+
+  /**
+   * @return string[]
+   */
+  abstract public static function rawGraphQLIncludes();
+
+  /**
+   * @return string[]
+   */
+  abstract public static function rawGraphQLArguments();
+
+  /**
+   * The GraphQL query processor.
+   *
+   * @var \Drupal\graphql\GraphQL\Execution\QueryProcessor
+   */
+  protected $queryProcessor;
+
+  /**
+   * Debug mode flag.
+   *
+   * @var bool
+   */
+  protected $debug = FALSE;
+
+  /**
+   * Inject the query processor.
+   *
+   * @param \Drupal\graphql\GraphQL\Execution\QueryProcessor $queryProcessor
+   *   The query processor instance.
+   */
+  public function setQueryProcessor(QueryProcessor $queryProcessor) {
+    $this->queryProcessor = $queryProcessor;
+  }
+
+  /**
+   * Set debug mode for this template.
+   *
+   * @param bool $debug
+   *   Boolean flag for debug mode.
+   */
+  public function setDebug($debug) {
+    $this->debug = $debug;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function display(array $context, array $blocks = array()) {
-    if (!isset($context['graphql']) || !$context['graphql']['debug']) {
+
+    if (!$query = $this->getGraphQLQuery()) {
       parent::display($context, $blocks);
       return;
     }
 
-    echo '<div class="graphql-twig-debug-wrapper" data-query="' . htmlspecialchars($context['graphql']['query']). '" data-variables="' . htmlspecialchars($context['graphql']['variables']) . '">';
-    if (isset($context['graphql']['errors']) && $context['graphql']['errors']) {
-      echo '<ul class="graphql-twig-errors">';
-      foreach ($context['graphql']['errors'] as $error) {
-        echo '<li>' . $error->message . '</li>';
+    $arguments = [];
+    foreach (static::rawGraphQLArguments() as $var) {
+      if (isset($context[$var])) {
+        $arguments[$var] = $context[$var] instanceof EntityInterface ? $context[$var]->id() : $context[$var];
       }
-      echo '</ul>';
     }
+
+
+    $queryResult = $this->env->getQueryProcessor()->processQuery('default:default', OperationParams::create([
+      'query' => $query,
+      'variables' => $arguments,
+    ]));
+
+    $build = [
+      '#cache' => [
+        'contexts' => $queryResult->getCacheContexts(),
+        'tags' => $queryResult->getCacheTags(),
+        'max-age' => $queryResult->getCacheMaxAge(),
+      ],
+    ];
+
+    $this->env->getRenderer()->render($build);
+
+    $context['graphql'] = [
+      'data' => $queryResult->data,
+      'errors' => $queryResult->errors,
+    ];
+
+    if ($this->env->isDebug()) {
+      echo '<div class="graphql-twig-debug-wrapper" data-query="' . htmlspecialchars($this->getGraphQLQuery()). '" data-variables="' . htmlspecialchars(json_encode($arguments)) . '">';
+      if (isset($context['graphql']['errors']) && $context['graphql']['errors']) {
+        echo '<ul class="graphql-twig-errors">';
+        foreach ($context['graphql']['errors'] as $error) {
+          echo '<li>' . $error->message . '</li>';
+        }
+        echo '</ul>';
+      }
+    }
+
     parent::display($context, $blocks);
-    echo '</div>';
+
+    if ($this->debug) {
+      echo '</div>';
+    }
   }
 
   /**
@@ -65,7 +166,7 @@ trait GraphQLTemplateTrait {
    *   The parent template or null.
    */
   protected function getGraphQLParent() {
-    return $this->graphqlParent ? $this->loadTemplate($this->graphqlParent) : NULL;
+    return static::rawGraphQLParent() ? $this->loadTemplate(static::rawGraphQLParent()) : NULL;
   }
 
   /**
@@ -75,13 +176,9 @@ trait GraphQLTemplateTrait {
    *   The GraphQL fragment.
    */
   public function getGraphQLFragment() {
-    $query = '';
     // If there is no query for this template, try to get one from the
     // parent template.
-    if ($this->graphqlQuery) {
-      $query = $this->graphqlQuery;
-    }
-    elseif ($parent = $this->getGraphQLParent()) {
+    if (!($query = static::rawGraphQLQuery()) && ($parent = $this->getGraphQLParent())) {
       $query = $parent->getGraphQLFragment();
     }
     return $query;
@@ -94,7 +191,7 @@ trait GraphQLTemplateTrait {
    *   The list of included templates.
    */
   public function getGraphQLIncludes() {
-    $includes = array_flip($this->graphqlIncludes);
+    $includes = array_flip(static::rawGraphQLIncludes());
     if ($includes) {
       foreach ($includes as $include => $key) {
         $includes += $this->loadTemplate($include)->getGraphQLIncludes();

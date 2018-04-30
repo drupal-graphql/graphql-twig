@@ -2,7 +2,11 @@
 
 namespace Drupal\graphql_twig;
 
+use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\Core\Template\TwigEnvironment;
+use Drupal\graphql\GraphQL\Execution\QueryProcessor;
 
 /**
  * Enhanced Twig environment for GraphQL.
@@ -17,12 +21,74 @@ use Drupal\Core\Template\TwigEnvironment;
 class GraphQLTwigEnvironment extends TwigEnvironment {
 
   /**
+   * A GraphQL query processor.
+   *
+   * @var \Drupal\graphql\GraphQL\Execution\QueryProcessor
+   */
+  protected $queryProcessor;
+
+  /**
+   * Retrieve the query processor.
+   *
+   * @return \Drupal\graphql\GraphQL\Execution\QueryProcessor
+   *   The GraphQL query processor.
+   */
+  public function getQueryProcessor() {
+    return $this->queryProcessor;
+  }
+
+  /**
+   * The renderer instance.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
+   * Retrieve the renderer instance.
+   *
+   * @return \Drupal\Core\Render\RendererInterface
+   *   The renderer instance.
+   */
+  public function getRenderer() {
+    return $this->renderer;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(
+    string $root,
+    CacheBackendInterface $cache,
+    string $twig_extension_hash,
+    StateInterface $state,
+    \Twig_LoaderInterface $loader = NULL,
+    array $options = [],
+    QueryProcessor $queryProcessor = NULL,
+    RendererInterface $renderer = NULL
+  ) {
+    $this->queryProcessor = $queryProcessor;
+    $this->renderer = $renderer;
+    parent::__construct(
+      $root,
+      $cache,
+      $twig_extension_hash,
+      $state,
+      $loader,
+      $options
+    );
+  }
+
+  /**
    * Regular expression to find a GraphQL annotation in a twig comment.
    *
    * @var string
    */
   public static $GRAPHQL_ANNOTATION_REGEX = '/{#graphql\s+(?<query>.*?)\s+#\}/s';
 
+  /**
+   * {@inheritdoc}
+   */
   public function compileSource($source, $name = NULL) {
     if ($source instanceof \Twig_Source) {
       // Check if there is a `*.gql` file with the same name as the template.
@@ -55,7 +121,8 @@ class GraphQLTwigEnvironment extends TwigEnvironment {
 
   /**
    * Replace `{#graphql ... #}` annotations with `{% graphql ... %}` tags.
-   * @param $code
+   *
+   * @param string $code
    *   The template code.
    *
    * @return string

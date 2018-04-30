@@ -12,27 +12,20 @@ class GraphQLFragmentNode extends \Twig_Node {
    *
    * @var string
    */
-  protected $fragment = "";
+  public $fragment = "";
 
   /**
    * GraphQLFragmentNode constructor.
    *
    * @param string $fragment
    *   The query fragment.
+   *
+   * @throws \GraphQL\Error\SyntaxError
+   *   Thrown if the GraphQL query is not valid.
    */
   public function __construct($fragment) {
     $this->fragment = $fragment;
     parent::__construct();
-  }
-
-  /**
-   * Retrieve the stored query fragment.
-   *
-   * @return string
-   *   The query fragment.
-   */
-  public function getFragment() {
-    return $this->fragment;
   }
 
 }

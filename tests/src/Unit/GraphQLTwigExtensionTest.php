@@ -20,18 +20,18 @@ class GraphQLTwigExtensionTest extends UnitTestCase {
   function setUp() {
     $this->twig = new \Twig_Environment(new\Twig_Loader_Array([
       'query' => '{% graphql %}query ($arg: String!) { foo(id: [1, 2, 3], search: "test") { bar } }{% endgraphql %}',
-      'simple' => '{% graphql %}a{% endgraphql %}',
+      'simple' => '{% graphql %}query a { foo }{% endgraphql %}',
       'extend' => '{% extends "simple" %}',
       'dynamic_extend' => '{% extends simple %}',
-      'override_extend' => '{% graphql %}b{% endgraphql %}{% extends "simple" %}',
-      'include' => '{% graphql %}a{% endgraphql %}{% include "sub_fragment" with { foo: "bar" } %}',
+      'override_extend' => '{% graphql %}query b { foo }{% endgraphql %}{% extends "simple" %}',
+      'include' => '{% graphql %}query a { foo }{% endgraphql %}{% include "sub_fragment" with { foo: "bar" } %}',
       'embed' => '{% embed "embeddable" %}{% block test %} Override {% endblock %}{% endembed %}',
-      'embeddable' => '{% graphql %}a{% endgraphql %}{% block test %} Test {% endblock %}',
-      'nested_include' => '{% graphql %}a{% endgraphql %}{% include "fragment" with { foo: "bar" } %}',
-      'dynamic_include' => '{% graphql %}a{% endgraphql %}{% include sub_fragment with { foo: "bar" } %}',
-      'fragment' => '{% graphql %}b{% endgraphql %}{% include "sub_fragment" %}',
-      'sub_fragment' => '{% graphql %}c{% endgraphql %}',
-      'extend_include' => '{% graphql %}a{% endgraphql %}{% extends "fragment" %}',
+      'embeddable' => '{% graphql %}query a { foo }{% endgraphql %}{% block test %} Test {% endblock %}',
+      'nested_include' => '{% graphql %}query a { foo }{% endgraphql %}{% include "fragment" with { foo: "bar" } %}',
+      'dynamic_include' => '{% graphql %}query a { foo }{% endgraphql %}{% include sub_fragment with { foo: "bar" } %}',
+      'fragment' => '{% graphql %}query b { foo }{% endgraphql %}{% include "sub_fragment" %}',
+      'sub_fragment' => '{% graphql %}query c { foo }{% endgraphql %}',
+      'extend_include' => '{% graphql %}query a { foo }{% endgraphql %}{% extends "fragment" %}',
     ]));
     $this->twig->addExtension(new GraphQLTwigExtension());
   }
@@ -47,7 +47,7 @@ class GraphQLTwigExtensionTest extends UnitTestCase {
   }
 
   function testExtend() {
-    $this->assertGraphQLQuery('extend', 'a');
+    $this->assertGraphQLQuery('extend', 'query a { foo }');
   }
 
   function testDynamicExtend() {
@@ -55,23 +55,23 @@ class GraphQLTwigExtensionTest extends UnitTestCase {
   }
 
   function testInclude() {
-    $this->assertGraphQLQuery('include', "a\nc");
+    $this->assertGraphQLQuery('include', "query a { foo }\nquery c { foo }");
   }
 
   function testEmbed() {
-    $this->assertGraphQLQuery('embed', "a");
+    $this->assertGraphQLQuery('embed', "query a { foo }");
   }
 
   function testNestedInclude() {
-    $this->assertGraphQLQuery('nested_include', "a\nb\nc");
+    $this->assertGraphQLQuery('nested_include', "query a { foo }\nquery b { foo }\nquery c { foo }");
   }
 
   function testDynamicInclude() {
-    $this->assertGraphQLQuery('dynamic_include', "a");
+    $this->assertGraphQLQuery('dynamic_include', "query a { foo }");
   }
 
   function testExtendInclude() {
-    $this->assertGraphQLQuery('extend_include', "a\nc");
+    $this->assertGraphQLQuery('extend_include', "query a { foo }\nquery c { foo }");
   }
 
 }

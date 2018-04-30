@@ -2,6 +2,10 @@
 
 namespace Drupal\graphql_twig;
 
+use GraphQL\Language\AST\DefinitionNode;
+use GraphQL\Language\AST\OperationDefinitionNode;
+use GraphQL\Language\AST\VariableDefinitionNode;
+use GraphQL\Language\Parser;
 use Twig_Compiler;
 
 /**
@@ -29,9 +33,24 @@ class GraphQLNode extends \Twig_Node {
 
   /**
    * The modules includes.
+   *
    * @var array
    */
   protected $includes = [];
+
+  /**
+   * Boolean indicator if this fragment includes operations.
+   *
+   * @var bool
+   */
+  public $hasOperations = FALSE;
+
+  /**
+   * The list of arguments accepted by operations in this fragment.
+   *
+   * @var array
+   */
+  public $arguments = [];
 
   /**
    * GraphQLNode constructor.
@@ -47,6 +66,24 @@ class GraphQLNode extends \Twig_Node {
     $this->query = $query;
     $this->parent = $parent;
     $this->includes = $includes;
+
+    if ($this->query) {
+      $document = Parser::parse($this->query);
+
+      /** @var \GraphQL\Language\AST\OperationDefinitionNode[] $operations */
+      $operations = array_filter(iterator_to_array($document->definitions->getIterator()), function (DefinitionNode $node) {
+        return $node instanceof OperationDefinitionNode;
+      });
+
+      $this->hasOperations = (bool) $operations;
+
+      $this->arguments = array_map(function (VariableDefinitionNode $node) {
+        return $node->variable->name->value;
+      }, array_reduce($operations, function ($carry, OperationDefinitionNode $node) {
+        return array_merge($carry, iterator_to_array($node->variableDefinitions->getIterator()));
+      }, []));
+    }
+
     parent::__construct();
   }
 
@@ -58,18 +95,23 @@ class GraphQLNode extends \Twig_Node {
       // Make the template implement the GraphQLTemplateTrait.
       ->write("\nuse \Drupal\graphql_twig\GraphQLTemplateTrait;\n")
       // Write metadata properties.
-      ->write("\nprotected \$graphqlQuery = ")
-      ->string($this->query)
-      ->write(";\n")
-      ->write("\nprotected \$graphqlParent = ")
-      ->string($this->parent)
-      ->write(";\n")
-      ->write("\nprotected \$graphqlIncludes = [");
+      ->write("\npublic static function hasGraphQLOperations() { return ")->repr($this->hasOperations)->write("; }\n")
+      ->write("\npublic static function rawGraphQLQuery() { return ")->string($this->query)->write("; }\n")
+      ->write("\npublic static function rawGraphQLParent() { return ")->string($this->parent)->write("; }\n");
+
+    $compiler->write("\npublic static function rawGraphQLIncludes() { return [");
+
     foreach ($this->includes as $include) {
       $compiler->string($include)->write(",");
     }
-    $compiler->write("];\n");
-  }
 
+    $compiler->write("]; }\n");
+
+    $compiler->write("\npublic static function rawGraphQLArguments() { return [");
+    foreach ($this->arguments as $argument) {
+      $compiler->string($argument)->write(",");
+    }
+    $compiler->write("]; }\n");
+  }
 
 }
