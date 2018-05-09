@@ -74,8 +74,9 @@ trait GraphQLTemplateTrait {
    * {@inheritdoc}
    */
   public function display(array $context, array $blocks = array()) {
+    $query = trim($this->getGraphQLQuery());
 
-    if (!$query = $this->getGraphQLQuery()) {
+    if (!$query || !static::hasGraphQLOperations()) {
       parent::display($context, $blocks);
       return;
     }
@@ -109,7 +110,11 @@ trait GraphQLTemplateTrait {
     ];
 
     if ($this->env->isDebug()) {
-      echo '<div class="graphql-twig-debug-wrapper" data-query="' . htmlspecialchars($this->getGraphQLQuery()). '" data-variables="' . htmlspecialchars(json_encode($arguments)) . '">';
+
+      $attach = ['#attached' => ['library' => ['graphql_twig/debug']]];
+      $this->env->getRenderer()->render($attach);
+
+      echo '<div class="graphql-twig-debug-wrapper" data-query="' . htmlspecialchars($this->getGraphQLQuery()) . '"' . ($arguments ? ' data-variables="' . htmlspecialchars(json_encode($arguments)) . '"' : '') . '>';
       if (isset($context['graphql']['errors']) && $context['graphql']['errors']) {
         echo '<ul class="graphql-twig-errors">';
         foreach ($context['graphql']['errors'] as $error) {

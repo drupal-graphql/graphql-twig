@@ -63,7 +63,7 @@ class GraphQLNode extends \Twig_Node {
    *   Identifiers for any included/referenced templates.
    */
   public function __construct($query, $parent, $includes) {
-    $this->query = $query;
+    $this->query = trim($query);
     $this->parent = $parent;
     $this->includes = $includes;
 
