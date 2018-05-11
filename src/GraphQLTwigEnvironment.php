@@ -58,9 +58,9 @@ class GraphQLTwigEnvironment extends TwigEnvironment {
    * {@inheritdoc}
    */
   public function __construct(
-    string $root,
+    $root,
     CacheBackendInterface $cache,
-    string $twig_extension_hash,
+    $twig_extension_hash,
     StateInterface $state,
     \Twig_LoaderInterface $loader = NULL,
     array $options = [],
