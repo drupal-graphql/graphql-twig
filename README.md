@@ -29,16 +29,20 @@ query {
 
 {% extends '@bartik/block.html.twig' %}
 {% block content %}
-  {% set admin = graphql.data.admin %}
-  {% set user = graphql.data.user %}
-  <div{{ content_attributes.addClass('content') }}>
-    {{ content }} and
-      {% if user.uid == admin.uid %}
-        you, {{ admin.name }}.
-      {% else %}
-        you, appreciated anonymous visitor.
-      {% endif %}
-  </div>
+  {% embed '@graphql_twig/query.html.twig' %}
+    {% block content %}
+      {% set admin = graphql.data.admin %}
+      {% set user = graphql.data.user %}
+      <div{{ content_attributes.addClass('content') }}>
+        {{ content }} and
+          {% if user.uid == admin.uid %}
+            you, {{ admin.name }}.
+          {% else %}
+            you, appreciated anonymous visitor.
+          {% endif %}
+      </div>
+    {% endblock %}
+  {% endembed %}
 {% endblock %}
 ```
 
@@ -47,6 +51,8 @@ what else happens here? In the `{#graphql ... #}` comment block we annotated a s
 be executed in an additional preprocessing step, to populate your template with an additional variable called
 `graphql` that will contain the result. We injected additional information into our template without the need
 to fall back to site building or manual preprocessing.
+The templates content is wrapped in an embed of `@graphql_twig/query.html.twig`. This is  not
+necessary, but will emit debug information if Twig's debug setting is set to `true`.
 
 This is the basic concept of GraphQL in Twig. Additionally it will collect query fragments from
 included templates, automatically try to match template variables to query arguments and enable you to tap
