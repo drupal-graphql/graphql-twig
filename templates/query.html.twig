@@ -1,0 +1,22 @@
+{% if graphql.debug %}
+{{ attach_library('graphql_twig/debug') }}
+<div
+    class="graphql-twig-debug-wrapper"
+    data-graphql-query="{{ graphql.query }}"
+    data-graphql-variables="{{ graphql.variables }}">
+  {% if graphql.errors %}
+    <ul class="graphql-twig-errors">
+      {% for error in graphql.errors %}
+        <li>{{ error.message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endif %}
+
+{% block content %}
+{{ content }}
+{% endblock %}
+
+{% if graphql.debug %}
+  </div>
+{% endif %}

@@ -30,7 +30,7 @@
   display: block;
 }
 
-.graphql-twig-debug-button {
+input[type="submit"].graphql-twig-debug-button {
   text-indent: -999em;
   border-radius: 50%;
   background: url(graphql.png) white center center no-repeat;

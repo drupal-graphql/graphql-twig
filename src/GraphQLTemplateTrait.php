@@ -113,28 +113,12 @@ trait GraphQLTemplateTrait {
     $context['graphql'] = [
       'data' => $queryResult->data,
       'errors' => $queryResult->errors,
+      'debug' => $this->env->isDebug(),
+      'query' => $query,
+      'variables' => htmlspecialchars(json_encode($arguments)),
     ];
 
-    if ($this->env->isDebug()) {
-
-      $attach = ['#attached' => ['library' => ['graphql_twig/debug']]];
-      $this->env->getRenderer()->render($attach);
-
-      echo '<div class="graphql-twig-debug-wrapper" data-query="' . htmlspecialchars($this->getGraphQLQuery()) . '"' . ($arguments ? ' data-variables="' . htmlspecialchars(json_encode($arguments)) . '"' : '') . '>';
-      if (isset($context['graphql']['errors']) && $context['graphql']['errors']) {
-        echo '<ul class="graphql-twig-errors">';
-        foreach ($context['graphql']['errors'] as $error) {
-          echo '<li>' . $error->message . '</li>';
-        }
-        echo '</ul>';
-      }
-    }
-
     parent::display($context, $blocks);
-
-    if ($this->debug) {
-      echo '</div>';
-    }
   }
 
   /**
