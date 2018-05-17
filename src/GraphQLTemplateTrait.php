@@ -3,6 +3,7 @@
 namespace Drupal\graphql_twig;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Template\TwigEnvironment;
 use Drupal\graphql\GraphQL\Execution\QueryProcessor;
 use GraphQL\Server\OperationParams;
 
@@ -74,9 +75,14 @@ trait GraphQLTemplateTrait {
    * {@inheritdoc}
    */
   public function display(array $context, array $blocks = array()) {
+    if (!static::hasGraphQLOperations()) {
+      parent::display($context, $blocks);
+      return;
+    }
+
     $query = trim($this->getGraphQLQuery());
 
-    if (!$query || !static::hasGraphQLOperations()) {
+    if (!$query) {
       parent::display($context, $blocks);
       return;
     }
@@ -149,13 +155,13 @@ trait GraphQLTemplateTrait {
 
       // Recursively collect all included fragments.
       $includes = array_map(function ($template) {
-        return $this->loadTemplate($template)->getGraphQLFragment();
+        return $this->env->loadTemplate($template)->getGraphQLFragment();
       }, $includes);
 
       // Always add includes from parent templates.
       if ($parent = $this->getGraphQLParent()) {
         $includes += array_map(function ($template) {
-          return $this->loadTemplate($template)->getGraphQLQuery();
+          return $this->env->loadTemplate($template)->getGraphQLQuery();
         }, array_keys($parent->getGraphQLIncludes()));
       }
     }
@@ -171,7 +177,7 @@ trait GraphQLTemplateTrait {
    *   The parent template or null.
    */
   protected function getGraphQLParent() {
-    return static::rawGraphQLParent() ? $this->loadTemplate(static::rawGraphQLParent()) : NULL;
+    return static::rawGraphQLParent() ? $this->env->loadTemplate(static::rawGraphQLParent()) : NULL;
   }
 
   /**
@@ -192,16 +198,26 @@ trait GraphQLTemplateTrait {
   /**
    * Retrieve a list of all direct or indirect included templates.
    *
+   * @param string[] $recursed
+   *   The list of templates already recursed into. Used internally.
+   *
    * @return string[]
    *   The list of included templates.
    */
-  public function getGraphQLIncludes() {
+  public function getGraphQLIncludes(&$recursed = []) {
+
     $includes = array_flip(static::rawGraphQLIncludes());
-    if ($includes) {
-      foreach ($includes as $include => $key) {
-        $includes += $this->loadTemplate($include)->getGraphQLIncludes();
+    foreach ($includes as $include => $key) {
+      if (in_array($include, $recursed)) {
+        continue;
       }
+
+      $recursed[] = $include;
+
+      // TODO: operate on template class instead.
+      $includes += $this->env->loadTemplate($include)->getGraphQLIncludes($recursed);
     }
+
     return $includes;
   }
 }
