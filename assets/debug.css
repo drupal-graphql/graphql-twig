@@ -14,7 +14,7 @@
   position: relative;
 }
 
-.graphql-twig-debug-wrapper form {
+.graphql-twig-debug-wrapper form.graphql-twig-debug-form {
   margin: 0!important;
   padding: 0!important;
 }
