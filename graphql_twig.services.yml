@@ -3,3 +3,9 @@ services:
     class: Drupal\graphql_twig\GraphQLTwigExtension
     tags:
       - { name: twig.extension }
+  graphql_twig.router:
+    class: Drupal\graphql_twig\Routing\GraphQLTwigRouter
+    arguments:
+    - '@theme_handler'
+  argument_resolver.graphql_twig:
+    class: Drupal\graphql_twig\Controller\ArgumentResolver

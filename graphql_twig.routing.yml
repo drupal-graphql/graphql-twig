@@ -1,0 +1,2 @@
+route_callbacks:
+- 'graphql_twig.router:routes'

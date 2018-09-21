@@ -4,3 +4,20 @@ description: 'Test theme for GraphQL Twig integration'
 package: GraphQL
 version: VERSION
 core: 8.x
+
+routes:
+  test_page:
+    path: '/twig-test/{word}'
+    title: 'Shouting: {{shout}}'
+    title_query: 'query ($word: String!) { shout(word: $word) }'
+    requirements:
+      _access: 'TRUE'
+
+blocks:
+  test_block:
+    label: "Test Block"
+    parameters:
+      id:
+        title: Word
+        type: textfield
+

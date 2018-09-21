@@ -80,6 +80,10 @@ trait GraphQLTemplateTrait {
       return;
     }
 
+    if (isset($context['graphql_arguments'])) {
+      $context = $context['graphql_arguments'];
+    }
+
     $query = trim($this->getGraphQLQuery());
 
     if (!$query) {

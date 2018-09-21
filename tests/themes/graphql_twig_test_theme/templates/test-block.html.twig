@@ -1,0 +1,6 @@
+{#graphql
+query ($word: String!) {
+  shout(word: $word)
+}
+#}
+<p>This block shouts: {{ graphql.data.shout }}</p>
