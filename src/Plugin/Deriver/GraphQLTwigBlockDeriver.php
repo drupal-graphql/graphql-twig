@@ -31,7 +31,7 @@ class GraphQLTwigBlockDeriver extends DeriverBase implements ContainerDeriverInt
           $this->derivatives[$name] = [
               'admin_label' => $this->t($block['label']),
               'graphql_theme_hook' => $name,
-              'graphql_parameters' => $block['parameters'] ?: [],
+              'graphql_parameters' => isset($block['parameters']) ? $block['parameters'] : [],
           ] + $base_plugin_definition;
         }
       }

@@ -1,0 +1,7 @@
+{#graphql
+query ($first: String!, $second: String!) {
+  first:shout(word: $first)
+  second:shout(word: $second)
+}
+#}
+<p>This block shouts: {{ graphql.data.first }} and {{ graphql.data.second }}</p>

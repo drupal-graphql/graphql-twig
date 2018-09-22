@@ -1,6 +1,6 @@
 {#graphql
-query ($word: String!) {
-  shout(word: $word)
+query ($first: String!) {
+  shout(word: $first)
 }
 #}
 <p>This block shouts: {{ graphql.data.shout }}</p>

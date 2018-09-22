@@ -117,7 +117,7 @@ class RouteTest extends GraphQLTestBase {
     $result = $this->container->get('http_kernel')->handle(Request::create('/missing'));
     $content = $result->getContent();
     $this->assertContains('<h1>Missing template</h1>', $content);
-    $this->assertContains('<div class="error">Missing template for route <em class="placeholder">missing</em>.</div>', $content);
+    $this->assertContains('<div class="error">Missing template for <em class="placeholder">missing</em>.</div>', $content);
   }
 
 }

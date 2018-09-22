@@ -1,0 +1,18 @@
+graphql_block:
+  type: block_settings
+  label: 'GraphQL block'
+
+block.settings.graphql_twig:*:
+  type: block_settings
+  label: 'GraphQL block'
+  mapping:
+    graphql_block:
+      type: sequence
+      sequence:
+        type: mapping
+        mapping:
+          key:
+            type: string
+          value:
+            type: string
+

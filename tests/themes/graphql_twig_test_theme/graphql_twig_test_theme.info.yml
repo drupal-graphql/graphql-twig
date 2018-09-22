@@ -52,10 +52,29 @@ routes:
 
 
 blocks:
-  test_block:
-    label: "Test Block"
+
+  block_no_arguments:
+    label: 'No Arguments'
+
+  block_one_argument:
+    label: 'One Argument'
     parameters:
-      id:
-        title: Word
+      first:
+        title: First
         type: textfield
 
+  block_multiple_arguments:
+    label: 'Multiple Arguments'
+    parameters:
+      first:
+        title: First
+        type: textfield
+      second:
+        title: First
+        type: textfield
+
+  block_static:
+    label: 'Static block'
+
+  block_missing:
+    label: 'Missing template'

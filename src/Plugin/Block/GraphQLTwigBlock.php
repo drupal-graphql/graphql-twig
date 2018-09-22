@@ -24,6 +24,14 @@ class GraphQLTwigBlock extends BlockBase {
   public function blockForm($form, FormStateInterface $form_state) {
     $form = parent::blockForm($form, $form_state);
 
+    $arguments = [];
+
+    if (isset($this->configuration['graphql_block'])) {
+      foreach ($this->configuration['graphql_block'] as $arg) {
+        $arguments[$arg['key']] = $arg['value'];
+      }
+    }
+
     foreach ($this->pluginDefinition['graphql_parameters'] as $name => $el) {
       foreach ($el as $key => $value) {
         if (in_array($key, ['title', 'description'])) {
@@ -32,6 +40,8 @@ class GraphQLTwigBlock extends BlockBase {
         else {
           $form['graphql_block'][$name]['#' . $key] = $value;
         }
+
+        $form['graphql_block'][$name]['#default_value'] = isset($arguments[$name]) ? $arguments[$name] : '';
       }
     }
 
@@ -46,7 +56,10 @@ class GraphQLTwigBlock extends BlockBase {
 
     foreach (array_keys($this->pluginDefinition['graphql_parameters']) as $arg) {
       $values = $form_state->getValues();
-      $this->configuration['graphql_block'][$arg] = $values['graphql_block'][$arg];
+      $this->configuration['graphql_block'][] = [
+        'key' => $arg,
+        'value' => $values['graphql_block'][$arg],
+      ];
     }
   }
 
@@ -56,8 +69,8 @@ class GraphQLTwigBlock extends BlockBase {
   public function build() {
     $arguments = [];
 
-    foreach (array_keys($this->pluginDefinition['graphql_parameters']) as $arg) {
-      $arguments[$arg] = $this->configuration['graphql_block'][$arg];
+    foreach ($this->configuration['graphql_block'] as $arg) {
+      $arguments[$arg['key']] = $arg['value'];
     }
 
     return [

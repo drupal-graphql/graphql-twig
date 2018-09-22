@@ -17,7 +17,7 @@ function graphql_twig_theme($existing, $type, $theme, $path) {
         $theme[$name] = [
           'variables' =>  [
             'graphql_arguments' => [],
-            'graphql_route' => $name,
+            'graphql_ext' => $name,
           ],
           'function' => '_graphql_twig_missing_template',
         ];
@@ -30,7 +30,7 @@ function graphql_twig_theme($existing, $type, $theme, $path) {
         $theme[$name] = [
           'variables' =>  [
             'graphql_arguments' => [],
-            'graphql_route' => $name,
+            'graphql_ext' => $name,
           ],
           'function' => '_graphql_twig_missing_template',
         ];
@@ -45,7 +45,7 @@ function graphql_twig_theme($existing, $type, $theme, $path) {
  * Emits an error message if a dynamic route template is missing.
  */
 function _graphql_twig_missing_template($variables) {
-  return '<div class="error">' . t('Missing template for route %route.', [
-    '%route' => $variables['graphql_route'],
+  return '<div class="error">' . t('Missing template for %ext.', [
+    '%ext' => $variables['graphql_ext'],
   ]) . '</div>';
 }
