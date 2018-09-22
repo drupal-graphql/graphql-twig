@@ -39,8 +39,8 @@ class GraphQLTwigRouter {
           $routes['graphql_twig.dynamic.' . $name] = new Route($route['path'], [
             '_controller' => RouteController::class . ':page',
             '_title_callback' => RouteController::class . ':title',
-            '_title' => $route['title'],
-            '_title_query' => $route['title_query'],
+            '_title' => isset($route['title']) ? $route['title'] : NULL,
+            '_title_query' => isset($route['title_query']) ? $route['title_query'] : NULL,
             '_graphql_theme_hook' => $name,
           ], isset($route['requirements']) ? $route['requirements'] : [
             '_access' => 'TRUE',

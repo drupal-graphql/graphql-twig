@@ -6,12 +6,50 @@ version: VERSION
 core: 8.x
 
 routes:
-  test_page:
-    path: '/twig-test/{word}'
-    title: 'Shouting: {{shout}}'
-    title_query: 'query ($word: String!) { shout(word: $word) }'
+  no_arguments:
+    path: '/no-args'
+    title: 'Shouting: DRUPAL'
+    title_query: 'query { shout(word: "drupal") }'
     requirements:
       _access: 'TRUE'
+
+  one_argument:
+    path: '/one-arg/{first}'
+    title: 'Shouting: {{shout}}'
+    title_query: 'query ($first: String!) { shout(word: $first) }'
+    requirements:
+      _access: 'TRUE'
+
+  multiple_arguments:
+    path: '/multi-args/{first}/{second}'
+    title: 'Shouting: {{first}} and {{second}}'
+    title_query: 'query ($first: String!, $second: String!) { first:shout(word: $first) second:shout(word: $second) }'
+    requirements:
+      _access: 'TRUE'
+
+  static:
+    path: '/static'
+    title: 'This is a static page'
+    requirements:
+      _access: 'TRUE'
+
+  no_title:
+    path: '/no-title'
+    requirements:
+      _access: 'TRUE'
+
+  no_access:
+    path: '/no-access'
+    requirements:
+      _access: 'FALSE'
+
+  missing:
+    path: '/missing'
+    title: 'Missing template'
+    requirements:
+      _access: 'TRUE'
+
+
 
 blocks:
   test_block:

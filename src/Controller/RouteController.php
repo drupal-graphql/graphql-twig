@@ -77,6 +77,9 @@ class RouteController extends ControllerBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   public function title($_graphql_title, $_graphql_title_query, $_graphql_arguments) {
+    if (!$_graphql_title) {
+      return FALSE;
+    }
     if ($_graphql_title_query) {
       $result = $this->queryProcessor->processQuery('default:default',
         OperationParams::create([
@@ -84,7 +87,13 @@ class RouteController extends ControllerBase {
           'variables' => $_graphql_arguments,
         ])
       );
-      $_graphql_title = $this->twig->renderInline($_graphql_title, $result->data);
+
+      if ($result->errors) {
+        $_graphql_title = reset($result->errors)->getMessage();
+      }
+      else {
+        $_graphql_title = $this->twig->renderInline($_graphql_title, $result->data);
+      }
     }
     else {
       $_graphql_title = $this->t($_graphql_title);

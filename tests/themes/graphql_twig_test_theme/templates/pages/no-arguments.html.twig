@@ -1,6 +1,6 @@
 {#graphql
-query ($word: String!) {
-  shout(word: $word)
+query {
+  shout(word: "Drupal")
 }
 #}
 <p>This page is supposed to shout: {{ graphql.data.shout }}</p>
