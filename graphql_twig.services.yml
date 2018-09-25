@@ -9,3 +9,20 @@ services:
     - '@theme_handler'
   argument_resolver.graphql_twig:
     class: Drupal\graphql_twig\Controller\ArgumentResolver
+
+  cache.graphql_twig.components:
+    class: Drupal\Core\Cache\CacheBackendInterface
+    tags:
+    - { name: cache.bin }
+    factory: cache_factory:get
+    arguments: [graphql_twig_components]
+
+  twig.loader.graphql:
+    class: Drupal\graphql_twig\Template\Loader\Loader
+    arguments:
+      - '@theme.manager'
+      - '%twig.config%'
+      - '@cache.graphql_twig.components'
+      - '@app.root'
+    tags:
+    - { name: twig.loader, priority: 1000 }
