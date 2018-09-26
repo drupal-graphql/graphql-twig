@@ -37,7 +37,7 @@ class Loader extends \Twig_Loader_Filesystem {
     array $twigConfig,
     CacheBackendInterface $cacheBackend,
     $paths = [],
-    ?string $rootPath = NULL
+    $rootPath = NULL
   ) {
     parent::__construct($paths, $rootPath);
     $this->cacheBackend = $cacheBackend;
