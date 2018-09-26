@@ -32,6 +32,7 @@ class GraphQLTwigExtensionTest extends UnitTestCase {
       'fragment' => '{% graphql %}query b { foo }{% endgraphql %}{% include "sub_fragment" %}',
       'sub_fragment' => '{% graphql %}query c { foo }{% endgraphql %}',
       'extend_include' => '{% graphql %}query a { foo }{% endgraphql %}{% extends "fragment" %}',
+      'embed_include' => '{% embed "embeddable" %}{% block test %}{% include "fragment" %}{% endblock %}{% endembed %}',
       'recursive' => '{% graphql %}query a { ... b }{% endgraphql %}{% include "recursive_include" %}',
       'recursive_include' => '{% graphql %}fragment b on foo { bar }{% endgraphql %}{% include "recursive_include" %}',
     ]));
@@ -74,6 +75,10 @@ class GraphQLTwigExtensionTest extends UnitTestCase {
 
   function testExtendInclude() {
     $this->assertGraphQLQuery('extend_include', "query a { foo }\nquery c { foo }");
+  }
+
+  function testEmbedInclude() {
+    $this->assertGraphQLQuery('embed_include', "query a { foo }\nquery b { foo }\nquery c { foo }");
   }
 
   function testRecursiveInclude() {

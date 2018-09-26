@@ -27,7 +27,7 @@ class GraphQLNodeVisitor extends \Twig_BaseNodeVisitor {
   /**
    * A list of referenced templates (include, embed).
    *
-   * @var string[]
+   * @var string[][]
    */
   protected $includes = [];
 
@@ -65,7 +65,7 @@ class GraphQLNodeVisitor extends \Twig_BaseNodeVisitor {
     if ($node instanceof \Twig_Node_Include && !($node instanceof \Twig_Node_Embed)) {
       $ref = $node->getNode('expr');
       if ($ref instanceof \Twig_Node_Expression_Constant) {
-        $this->includes[] = $ref->getAttribute('value');
+        $this->includes[$node->getTemplateName()][] = $ref->getAttribute('value');
       }
     }
 
@@ -84,12 +84,12 @@ class GraphQLNodeVisitor extends \Twig_BaseNodeVisitor {
     if ($node instanceof \Twig_Node_Module) {
       // Store current query information to be compiled into the templates
       // `class_end`.
-      $node->setNode('class_end', new GraphQLNode($this->query, $this->parent, $this->includes));
+      $includes = isset($this->includes[$node->getTemplateName()]) ? $this->includes[$node->getTemplateName()] : [];
+      $node->setNode('class_end', new GraphQLNode($this->query, $this->parent, $includes));
 
       // Reset query information for the next module.
       $this->query = '';
       $this->parent = '';
-      $this->includes = [];
     }
     return $node;
   }
