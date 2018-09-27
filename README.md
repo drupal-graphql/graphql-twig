@@ -31,8 +31,8 @@ query {
 {% block content %}
   {% embed '@graphql_twig/query.html.twig' %}
     {% block content %}
-      {% set admin = graphql.data.admin %}
-      {% set user = graphql.data.user %}
+      {% set admin = graphql.admin %}
+      {% set user = graphql.user %}
       <div{{ content_attributes.addClass('content') }}>
         {{ content }} and
           {% if user.uid == admin.uid %}

@@ -7,6 +7,6 @@ query {
 }
 #}
 Garage:
-{% for vehicle in graphql.data.garage %}
+{% for vehicle in graphql.garage %}
   {% include '#graphql-vehicle' with vehicle %}
 {% endfor %}
