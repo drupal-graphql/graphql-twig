@@ -101,7 +101,7 @@ trait GraphQLTemplateTrait {
 
       // Auto-attach the debug assets if necessary.
       $template_attached = ['#attached' => ['library' => ['graphql_twig/debug']]];
-      $this->renderer->render($template_attached);
+      $this->env->getRenderer()->render($template_attached);
 
       printf(
         '<div class="%s" data-graphql-query="%s" data-graphql-variables="%s">',
