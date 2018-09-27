@@ -45,13 +45,6 @@ trait GraphQLTemplateTrait {
   protected $queryProcessor;
 
   /**
-   * Debug mode flag.
-   *
-   * @var bool
-   */
-  protected $debug = FALSE;
-
-  /**
    * Inject the query processor.
    *
    * @param \Drupal\graphql\GraphQL\Execution\QueryProcessor $queryProcessor
@@ -59,16 +52,6 @@ trait GraphQLTemplateTrait {
    */
   public function setQueryProcessor(QueryProcessor $queryProcessor) {
     $this->queryProcessor = $queryProcessor;
-  }
-
-  /**
-   * Set debug mode for this template.
-   *
-   * @param bool $debug
-   *   Boolean flag for debug mode.
-   */
-  public function setDebug($debug) {
-    $this->debug = $debug;
   }
 
   /**
@@ -114,10 +97,11 @@ trait GraphQLTemplateTrait {
 
     $this->env->getRenderer()->render($build);
 
-    if ($this->debug) {
-      echo printf(
+    if ($this->env->isDebug()) {
+      printf(
         '<div class="%s" data-graphql-query="%s" data-graphql-variables="%s">',
         'graphql-twig-debug-wrapper',
+        htmlspecialchars($query),
         htmlspecialchars(json_encode($arguments))
       );
     }
@@ -134,7 +118,7 @@ trait GraphQLTemplateTrait {
       parent::display($context, $blocks);
     }
 
-    if ($this->debug) {
+    if ($this->env->isDebug()) {
       print('</div>');
     }
   }
