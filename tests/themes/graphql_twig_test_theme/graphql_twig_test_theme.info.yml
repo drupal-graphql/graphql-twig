@@ -49,6 +49,12 @@ routes:
     requirements:
       _access: 'TRUE'
 
+  error:
+    path: '/error'
+    title: 'Query error'
+    requirements:
+      _access: 'TRUE'
+
 
 
 blocks:

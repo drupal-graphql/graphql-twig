@@ -117,7 +117,16 @@ class RouteTest extends GraphQLTestBase {
     $result = $this->container->get('http_kernel')->handle(Request::create('/missing'));
     $content = $result->getContent();
     $this->assertContains('<h1>Missing template</h1>', $content);
-    $this->assertContains('<div class="error">Missing template for <em class="placeholder">missing</em>.</div>', $content);
+    $this->assertContains('<div class="graphql-twig-errors">Missing template for <em class="placeholder">missing</em>.</div>', $content);
+  }
+
+  /**
+   * Test page with a broken query.
+   */
+  public function testError() {
+    $result = $this->container->get('http_kernel')->handle(Request::create('/error'));
+    $content = $result->getContent();
+    $this->assertContains('Field "shout" argument "word" of type "String!" is required but not provided.', $content);
   }
 
 }

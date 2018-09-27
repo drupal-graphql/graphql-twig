@@ -125,7 +125,7 @@ class BlockTest extends GraphQLTestBase {
     $this->placeGraphQLBlock('block_missing');
     $result = $this->container->get('http_kernel')->handle(Request::create('/static'));
     $content = $result->getContent();
-    $this->assertContains('<div class="error">Missing template for <em class="placeholder">block_missing</em>.</div>', $content);
+    $this->assertContains('<div class="graphql-twig-errors">Missing template for <em class="placeholder">block_missing</em>.</div>', $content);
   }
 
 }
