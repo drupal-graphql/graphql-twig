@@ -117,26 +117,4 @@ class ThemeTest extends KernelTestBase {
     $process->shouldHaveBeenCalledTimes(2);
   }
 
-  /**
-   * Test if a template is turned into a theme hook automatically.
-   */
-  public function testAutoThemeHook() {
-    $testString = 'This is a test.';
-    $this->processor
-      ->processQuery(Argument::any(), Argument::any())
-      ->willReturn(new QueryResult([
-        'echo' => $testString,
-      ]))
-      ->shouldBeCalled();
-
-    $element = [
-      '#theme' => 'graphql_echo',
-      '#input' => $testString,
-    ];
-
-    $result = $this->render($element);
-
-    $this->assertContains('<strong>' . $testString . '</strong>', $result);
-  }
-
 }
