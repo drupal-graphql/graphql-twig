@@ -21,11 +21,13 @@ class GraphqlTwigServiceProvider extends ServiceProviderBase {
       ->addArgument(new Reference('graphql.query_processor'))
       ->addArgument(new Reference('renderer'));
 
-    // Inject our own argument resolver.
-    $def = $container->getDefinition('http_kernel.controller.argument_resolver');
-    $argumentResolvers = $def->getArgument(1);
-    $argumentResolvers[] = new Reference('argument_resolver.graphql_twig');
-    $def->setArgument(1, $argumentResolvers);
+    // Inject our own argument resolver if it's availabble (in Drupal 8.6).
+    if ($container->hasDefinition('http_kernel.controller.argument_resolver')) {
+      $def = $container->getDefinition('http_kernel.controller.argument_resolver');
+      $argumentResolvers = $def->getArgument(1);
+      $argumentResolvers[] = new Reference('argument_resolver.graphql_twig');
+      $def->setArgument(1, $argumentResolvers);
+    }
   }
 
 }
