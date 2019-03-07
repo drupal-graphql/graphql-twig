@@ -7,6 +7,11 @@
 The GraphQL Twig module allows you to inject data into Twig templates by simply adding
 a GraphQL query. No site building or pre-processing necessary.
 
+## Requirements
+
+* Drupal >= 8.6
+* PHP >= 7.0
+
 ## Simple example 
 
 The *"Powered by Drupal"* block only gives credit to Drupal, but what's a website
