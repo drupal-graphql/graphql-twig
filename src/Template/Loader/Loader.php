@@ -59,7 +59,7 @@ class Loader extends \Twig_Loader_Filesystem {
       return $cache->data;
     }
 
-    foreach (file_scan_directory($path, '/.*\.twig/') as $file) {
+    foreach (file_scan_directory($path, '/.*\.twig$/') as $file) {
       $this->components[$file->name] = $file->uri;
     }
 
@@ -78,8 +78,12 @@ class Loader extends \Twig_Loader_Filesystem {
     if (is_null($this->components)) {
       // Scan the directory for any twig files and register them.
       // TODO: inherit components from base theme
-      // TODO: configurable components directory
-      $this->components = $this->listComponents($this->themeManager->getActiveTheme()->getPath() . '/components');
+      $activeTheme = $this->themeManager->getActiveTheme();
+      $info = system_get_info('theme', $activeTheme->getName());
+      $componentsDirectory = array_key_exists('components', $info)
+        ? $info['components']
+        : $activeTheme->getPath() . '/components';
+      $this->components = $this->listComponents($componentsDirectory);
     }
 
     if ($name[0] === '#') {
