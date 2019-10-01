@@ -1,2 +1,10 @@
 route_callbacks:
 - 'graphql_twig.router:routes'
+
+graphql_twig.settings:
+  path: '/admin/config/services/graphql_twig'
+  defaults:
+    _form: 'Drupal\graphql_twig\Form\GraphQLTwigSettingsForm'
+    _title: 'GraphQL Twig'
+  requirements:
+    _permission: 'administer site configuration'
