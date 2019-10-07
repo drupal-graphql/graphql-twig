@@ -16,3 +16,10 @@ block.settings.graphql_twig:*:
           value:
             type: string
 
+graphql_twig.settings:
+  type: config_object
+  label: 'GraphQL Twig settings'
+  mapping:
+    debug_placement:
+      type: string
+      label: 'Notification email address'

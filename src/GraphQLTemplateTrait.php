@@ -97,12 +97,16 @@ trait GraphQLTemplateTrait {
 
     $this->env->getRenderer()->render($build);
 
-    if ($this->env->isDebug()) {
+    $config = \Drupal::config('graphql_twig.settings');
+    $debug_placement = $config->get('debug_placement');
 
+    if ($this->env->isDebug()) {
       // Auto-attach the debug assets if necessary.
       $template_attached = ['#attached' => ['library' => ['graphql_twig/debug']]];
       $this->env->getRenderer()->render($template_attached);
+    }
 
+    if ($this->env->isDebug() && $debug_placement == 'wrapped') {
       printf(
         '<div class="%s" data-graphql-query="%s" data-graphql-variables="%s">',
         'graphql-twig-debug-wrapper',
@@ -120,10 +124,26 @@ trait GraphQLTemplateTrait {
     }
     else {
       $context['graphql'] = $queryResult->data;
+      if ($this->env->isDebug() && $debug_placement == 'inside') {
+        $context['graphql_debug'] = [
+          '#markup' => sprintf(
+            '<div class="graphql-twig-debug-child"><div class="%s" data-graphql-query="%s" data-graphql-variables="%s"></div></div>',
+            'graphql-twig-debug-wrapper',
+            htmlspecialchars($query),
+            htmlspecialchars(json_encode($arguments))
+          ),
+        ];
+
+        // Add the debug parent class to the element.
+        /** @var \Drupal\Core\Template\Attribute $attributes */
+        $attributes = $context['attributes'];
+        $attributes->addClass('graphql-twig-debug-parent');
+      }
+
       parent::display($context, $blocks);
     }
 
-    if ($this->env->isDebug()) {
+    if ($this->env->isDebug() && $debug_placement == 'wrapped') {
       print('</div>');
     }
   }
