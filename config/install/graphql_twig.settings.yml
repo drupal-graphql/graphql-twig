@@ -1,0 +1,2 @@
+# Debug output mode inside twig files: wrapped vs inside
+debug_placement: 'wrapped'
