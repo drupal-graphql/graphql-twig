@@ -2,10 +2,11 @@
   Drupal.behaviors.graphqlTwigDebug = {
     attach: function (context, settings) {
       $('.graphql-twig-debug-wrapper', context).once('graphql-debug').each(function () {
-        var query = $(this).attr('data-graphql-query');
-        var variables = $(this).attr('data-graphql-variables');
-        var $form = $('<form method="post" target="_blank"></form>').attr('action', Drupal.url('graphql/explorer')).appendTo(this);
-        var txt = document.createElement('textarea');
+        var query = $(this).attr('data-graphql-query'),
+            variables = $(this).attr('data-graphql-variables'),
+            $form = $('<form method="post" target="_blank"></form>').attr('action', Drupal.url('graphql/explorer')).appendTo(this),
+            txt = document.createElement('textarea');
+
         txt.innerHTML = variables;
         variables = txt.value;
         $('<input type="hidden" name="query"/>').val(query).appendTo($form);
