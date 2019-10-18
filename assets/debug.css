@@ -26,10 +26,7 @@
   display: none;
 }
 
-.graphql-twig-debug-wrapper:hover .graphql-twig-debug-button {
-  display: block;
-}
-
+.graphql-twig-debug-parent:hover > .graphql-twig-debug-child .graphql-twig-debug-button,
 .graphql-twig-debug-parent:hover .graphql-twig-debug-button {
   display: block;
 }
