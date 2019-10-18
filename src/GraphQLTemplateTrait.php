@@ -100,7 +100,7 @@ trait GraphQLTemplateTrait {
     $config = \Drupal::config('graphql_twig.settings');
     $debug_placement = $config->get('debug_placement');
 
-    if ($this->env->isDebug()) {
+    if ($this->env->isDebug() && \Drupal::currentUser()->hasPermission('use graphql explorer')) {
       // Auto-attach the debug assets if necessary.
       $template_attached = ['#attached' => ['library' => ['graphql_twig/debug']]];
       $this->env->getRenderer()->render($template_attached);
