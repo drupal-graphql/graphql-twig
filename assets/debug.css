@@ -19,6 +19,18 @@
   padding: 0!important;
 }
 
+input[type="submit"].graphql-twig-debug-button {
+  z-index: 99;
+  position: absolute;
+  text-indent: -999em;
+  border-radius: 50%;
+  background: url(graphql.png) white center center no-repeat;
+  background-size: 20px 20px;
+  border: 1px solid #CCC;
+  width: 26px;
+  height: 26px;
+}
+
 .graphql-twig-debug-wrapper .graphql-twig-debug-button {
   position: absolute;
   top: 4px;
@@ -27,16 +39,6 @@
 }
 
 .graphql-twig-debug-parent:hover > .graphql-twig-debug-child .graphql-twig-debug-button,
-.graphql-twig-debug-parent:hover .graphql-twig-debug-button {
+.graphql-twig-debug-wrapper:hover > form > .graphql-twig-debug-button {
   display: block;
-}
-
-input[type="submit"].graphql-twig-debug-button {
-  text-indent: -999em;
-  border-radius: 50%;
-  background: url(graphql.png) white center center no-repeat;
-  background-size: 20px 20px;
-  border: 1px solid #CCC;
-  width: 26px;
-  height: 26px;
 }
